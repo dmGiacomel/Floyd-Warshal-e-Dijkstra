@@ -6,6 +6,8 @@
 #include <tuple>
 #include <functional>
 #include <unordered_set>
+#include <chrono>
+#include <iomanip>
 
 const int INF = INT32_MAX/2;
 
@@ -172,7 +174,7 @@ int* dijkstraWithoutDecrease(size_t n_vertices, int** adj_matrix, size_t source)
 int** djikstraAllPairs (size_t n_vertices, int** adj_matrix){
     int **min_distances = new int* [n_vertices]; 
     for (size_t i = 0; i < n_vertices; i++){
-        std::cout << "vertex " << i << std::endl;
+        //std::cout << "vertex " << i << std::endl;
         min_distances[i] = dijkstraWithoutDecrease(n_vertices, adj_matrix, i);
     }
 
@@ -189,7 +191,15 @@ int main(){
     adj_matrix = getMatrix(n_vertices, n_vertices);
     readMatrix(n_vertices, n_vertices, adj_matrix);
     fillInfinitys(n_vertices, n_vertices, adj_matrix);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     min_distances = djikstraAllPairs(n_vertices, adj_matrix);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    std::cout << duration.count() << "," << n_vertices << "," << std::endl;
         // printMatrix(n_vertices, n_vertices, min_distances);
 
     freeMatrixContiguous(adj_matrix);
