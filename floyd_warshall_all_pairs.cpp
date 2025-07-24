@@ -96,7 +96,7 @@ int main (){
     //std::cout << std::endl;
     fillInfinitys(n_vertices, n_vertices, adj_matrix);
     // printMatrix(n_vertices, n_vertices, adj_matrix);
-    //std::cout << std::endl;
+    //std::cout << std::endl
 
     auto start = std::chrono::high_resolution_clock::now();
 

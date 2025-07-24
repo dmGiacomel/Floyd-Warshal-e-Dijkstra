@@ -65,46 +65,41 @@ void printMatrix(size_t rows, size_t columns, int** matrix){
     }
 }
 
-int* dijkstraWithoutDecrease(size_t n_vertices, int** adj_matrix, size_t source) {
+int* dijkstraWithVector(size_t n_vertices, int** adj_matrix, size_t source) {
     int* min_distances = new int[n_vertices];
     std::fill(min_distances, min_distances + n_vertices, INF);
+    min_distances[source] = 0;
 
-    std::vector<bool> closed(n_vertices, false);
-    size_t n_closed_vertices = 0;
+    std::vector<bool> visited(n_vertices, false);
 
-    std::priority_queue<std::pair<int, size_t>,
-                        std::vector<std::pair<int, size_t>>,
-                        std::greater<std::pair<int, size_t>>> p_queue;
+    for (size_t i = 0; i < n_vertices; ++i) {
+        // Find the unvisited vertex with the smallest distance
+        int min_dist = INF;
+        size_t u = n_vertices; // invalid initially
+        for (size_t v = 0; v < n_vertices; ++v) {
+            if (!visited[v] && min_distances[v] < min_dist) {
+                min_dist = min_distances[v];
+                u = v;
+            }
+        }
 
-    p_queue.push(std::make_pair(0, source));
-    while (n_closed_vertices != n_vertices) {
-        std::pair<int, size_t> current = p_queue.top();
-        p_queue.pop();
+        // All reachable vertices processed
+        if (u == n_vertices) break;
 
-        int current_cost = current.first;
-        size_t current_vertex = current.second;
+        visited[u] = true;
 
-        if (closed[current_vertex]) continue;
-
-        closed[current_vertex] = true;
-        n_closed_vertices++;
-        min_distances[current_vertex] = current_cost;
-
-        int* neighbourhood = adj_matrix[current_vertex];
-        for (size_t neighbour = 0; neighbour < n_vertices; neighbour++) {
-
-            if (closed[neighbour]) continue;
-
-            int edge_cost = neighbourhood[neighbour];
-            if (edge_cost >= INF) continue;
-
-            int new_possible_cost = current_cost + edge_cost;
-            if (new_possible_cost < min_distances[neighbour]) {
-                min_distances[neighbour] = new_possible_cost;
-                p_queue.push(std::make_pair(new_possible_cost, neighbour));
+        int* neighbourhood = adj_matrix[u];
+        for (size_t v = 0; v < n_vertices; ++v) {
+            int edge_cost = neighbourhood[v];
+            if (edge_cost < INF && !visited[v]) {
+                int new_cost = min_distances[u] + edge_cost;
+                if (new_cost < min_distances[v]) {
+                    min_distances[v] = new_cost;
+                }
             }
         }
     }
+
     return min_distances;
 }
 
@@ -112,7 +107,7 @@ int** djikstraAllPairs (size_t n_vertices, int** adj_matrix){
     int **min_distances = new int* [n_vertices]; 
     for (size_t i = 0; i < n_vertices; i++){
         //std::cout << "vertex " << i << std::endl;
-        min_distances[i] = dijkstraWithoutDecrease(n_vertices, adj_matrix, i);
+        min_distances[i] = dijkstraWithVector(n_vertices, adj_matrix, i);
     }
 
     return min_distances;
