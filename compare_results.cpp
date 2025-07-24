@@ -40,6 +40,13 @@ void fillInfinitys(size_t rows, size_t columns, int** matrix){
     }
 }
 
+void fillZerosInDiagonal(size_t rows, size_t columns, int** matrix){
+    //upper triangular
+    for (size_t i = 0; i < rows; i++){
+        matrix[i][i] = 0;
+    }
+}
+
 void readMatrix(size_t rows, size_t columns, int** matrix){
     for (size_t i = 0; i < rows; i++){
         for (size_t j = 0; j < columns; j++){
@@ -119,6 +126,49 @@ int* dijkstraWithDecrease(size_t n_vertices, int** adj_matrix, size_t source){
     return min_distances;
 }
 
+int* dijkstraWithoutDecrease(size_t n_vertices, int** adj_matrix, size_t source) {
+    int* min_distances = new int[n_vertices];
+    std::fill(min_distances, min_distances + n_vertices, INF);
+
+    std::vector<bool> closed(n_vertices, false);
+    size_t n_closed_vertices = 0;
+
+    std::priority_queue<std::pair<int, size_t>,
+                        std::vector<std::pair<int, size_t>>,
+                        std::greater<std::pair<int, size_t>>> p_queue;
+
+    p_queue.push(std::make_pair(0, source));
+    while (n_closed_vertices != n_vertices) {
+        std::pair<int, size_t> current = p_queue.top();
+        p_queue.pop();
+
+        int current_cost = current.first;
+        size_t current_vertex = current.second;
+
+        if (closed[current_vertex]) continue;
+
+        closed[current_vertex] = true;
+        n_closed_vertices++;
+        min_distances[current_vertex] = current_cost;
+
+        int* neighbourhood = adj_matrix[current_vertex];
+        for (size_t neighbour = 0; neighbour < n_vertices; neighbour++) {
+
+            if (closed[neighbour]) continue;
+
+            int edge_cost = neighbourhood[neighbour];
+            if (edge_cost >= INF) continue;
+
+            int new_possible_cost = current_cost + edge_cost;
+            if (new_possible_cost < min_distances[neighbour]) {
+                min_distances[neighbour] = new_possible_cost;
+                p_queue.push(std::make_pair(new_possible_cost, neighbour));
+            }
+        }
+    }
+    return min_distances;
+}
+
 int** djikstraAllPairs (size_t n_vertices, int** adj_matrix){
     int **min_distances = new int* [n_vertices]; 
     for (size_t i = 0; i < n_vertices; i++){
@@ -129,10 +179,46 @@ int** djikstraAllPairs (size_t n_vertices, int** adj_matrix){
     return min_distances;
 }
 
+int** djikstraAllPairsNoDecrease (size_t n_vertices, int** adj_matrix){
+    int **min_distances = new int* [n_vertices]; 
+    for (size_t i = 0; i < n_vertices; i++){
+        //std::cout << "vertex " << i << std::endl;
+        min_distances[i] = dijkstraWithoutDecrease(n_vertices, adj_matrix, i);
+    }
+
+    return min_distances;
+}
+
+void floydWarshall(size_t n_vertices, int** adj_matrix){
+    for (size_t k = 0; k < n_vertices; k++){
+        for(size_t i = 0; i < n_vertices; i++){
+            int ik = adj_matrix[i][k];
+            if (ik == INF){
+                continue;
+            }   
+            for(size_t j = 0; j < n_vertices; j++){
+                adj_matrix[i][j] = std::min(
+                    adj_matrix[i][j],
+                    ik + adj_matrix[k][j]
+                );
+            }
+        }
+    }
+}
+
+bool cpmMatrixes(size_t n_vertices, int **matrix_a, int **matrix_b){
+    for (size_t i = 0; i < n_vertices; i++){
+        for (size_t j = 0; j < n_vertices; j++){
+            if (matrix_a[i][j] != matrix_b[i][j]) return false;
+        }
+    }
+    return true;
+}
+
 int main(){
     size_t n_vertices{0};
     int **adj_matrix;
-    int **min_distances;
+    int **min_distances_decrease, **min_distances_no_dec;
 
     std::cin >> n_vertices;
 
@@ -140,18 +226,28 @@ int main(){
     readMatrix(n_vertices, n_vertices, adj_matrix);
     fillInfinitys(n_vertices, n_vertices, adj_matrix);
 
-    auto start = std::chrono::high_resolution_clock::now();
+    min_distances_decrease = djikstraAllPairs(n_vertices, adj_matrix);
+    min_distances_no_dec = djikstraAllPairsNoDecrease(n_vertices, adj_matrix);
+    fillZerosInDiagonal(n_vertices, n_vertices, adj_matrix);
+    floydWarshall(n_vertices, adj_matrix);
 
-    min_distances = djikstraAllPairs(n_vertices, adj_matrix);
+    if(cpmMatrixes(n_vertices, adj_matrix, min_distances_decrease) 
+       && cpmMatrixes(n_vertices, min_distances_no_dec, min_distances_decrease))
+    {
+        std::cout << "Pass :D" << std::endl;
+    }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
+    // std::cout << "resultado FW:" << std::endl;
+    // printMatrix(n_vertices, n_vertices, adj_matrix);
+    // std::cout << std::endl;
 
-    std::cout << duration.count() << "," << n_vertices << std::endl;
-        // printMatrix(n_vertices, n_vertices, min_distances);
+    // std::cout << "resultado DIJ:" << std::endl;
+    // printMatrix(n_vertices, n_vertices, adj_matrix);
+    // std::cout << std::endl;
 
     freeMatrixContiguous(adj_matrix);
-    freeMatrixNonContiguous(min_distances, n_vertices);
+    freeMatrixNonContiguous(min_distances_decrease, n_vertices);
+    freeMatrixNonContiguous(min_distances_no_dec, n_vertices);
 
 
     return 0;

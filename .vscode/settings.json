@@ -51,6 +51,14 @@
         "ctime": "cpp",
         "ratio": "cpp",
         "iomanip": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "bitset": "cpp",
+        "complex": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "optional": "cpp",
+        "source_location": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     }
 }
