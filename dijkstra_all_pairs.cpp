@@ -136,7 +136,7 @@ int main(){
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
-    std::cout << duration.count() << "," << n_vertices << "," << std::endl;
+    std::cout << duration.count() << "," << n_vertices << std::endl;
         // printMatrix(n_vertices, n_vertices, min_distances);
 
     freeMatrixContiguous(adj_matrix);

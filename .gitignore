@@ -1,3 +1,4 @@
 *.csv
 grafos/
 .venv/
+boost-1.88.0-cmake/
