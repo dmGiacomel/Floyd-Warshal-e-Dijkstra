@@ -78,7 +78,7 @@ int* dijkstraWithDecrease(size_t n_vertices, int** adj_matrix, size_t source){
 
     using Heap = boost::heap::d_ary_heap<
         std::pair<int, size_t>,
-        boost::heap::arity<4>,
+        boost::heap::arity<2>,
         boost::heap::mutable_<true>,
         boost::heap::compare<std::greater<>>
     >;

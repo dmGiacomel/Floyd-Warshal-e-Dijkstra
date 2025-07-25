@@ -77,25 +77,28 @@ plt.figure(figsize=(12,8))
 
 # plotar linhas de cada alg
 plt.plot(dijkstra_df['Graph Size'], dijkstra_df['Mean Execution Time'], 
-         marker='o', linewidth=2, label='Dijkstra', color='blue')
+         marker='o', linewidth=2, label='Dijkstra (S/ DecreaseKey)', color='blue')
 
 plt.plot(floyd_w_df['Graph Size'], floyd_w_df['Mean Execution Time'], 
          marker='s', linewidth=2, label='Floyd-Warshall', color='red')
 
 plt.plot(dijkstra_dk_df['Graph Size'], dijkstra_dk_df['Mean Execution Time'], 
-         marker='^', linewidth=2, label='Dijkstra DK', color='green')
+         marker='^', linewidth=2, label='Dijkstra (C/ DecreaseKey)', color='green')
 
 # Configurações do gráfico
-plt.xlabel('Tamanho do Grafo (número de vértices)', fontsize=12)
-plt.ylabel('Tempo Médio de Execução (segundos)', fontsize=12)
+plt.xlabel('Tamanho do Grafo (número de vértices)', fontsize=14)
+plt.ylabel('Tempo Médio de Execução (segundos)', fontsize=14)
 #plt.title('Comparação de Performance: Dijkstra vs Floyd-Warshall vs Dijkstra DK', fontsize=14)
-plt.legend(fontsize=11)
+plt.legend(fontsize=14)
 plt.grid(True, alpha=0.3)
 # Configurar o eixo X com os valores reais dos tamanhos
 plt.xticks(sizes, rotation=90)
 #plt.yscale('log')  # Escala logarítmica para melhor visualização
 #plt.xscale('log')  # Escala logarítmica para o eixo X também
 plt.tight_layout()
+plt.tick_params(axis='both', which='major', labelsize=12)
+
+plt.savefig('comparacao_total.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -103,7 +106,7 @@ plt.show()
 plt.figure(figsize=(12, 8))
 
 # Filtrar dados para zoom (10 a 500 vértices)
-zoom_sizes = [s for s in sizes if 10 <= s <= 500]
+zoom_sizes = [s for s in sizes if 10 <= s <= 300]
 
 # Filtrar DataFrames
 dijkstra_zoom = dijkstra_df[dijkstra_df['Graph Size'].isin(zoom_sizes)]
@@ -112,26 +115,28 @@ dijkstra_dk_zoom = dijkstra_dk_df[dijkstra_dk_df['Graph Size'].isin(zoom_sizes)]
 
 # Plotar linhas para o zoom
 plt.plot(dijkstra_zoom['Graph Size'], dijkstra_zoom['Mean Execution Time'], 
-         marker='o', linewidth=2, label='Dijkstra', color='blue')
+         marker='o', linewidth=2, label='Dijkstra (S/ DecreaseKey)', color='blue')
 
 plt.plot(floyd_zoom['Graph Size'], floyd_zoom['Mean Execution Time'], 
          marker='s', linewidth=2, label='Floyd-Warshall', color='red')
 
 plt.plot(dijkstra_dk_zoom['Graph Size'], dijkstra_dk_zoom['Mean Execution Time'], 
-         marker='^', linewidth=2, label='Dijkstra DK', color='green')
+         marker='^', linewidth=2, label='Dijkstra (C/ DecreaseKey)', color='green')
 
 # Configurações do gráfico zoom
-plt.xlabel('Tamanho do Grafo (número de vértices)', fontsize=12)
-plt.ylabel('Tempo Médio de Execução (segundos)', fontsize=12)
+plt.xlabel('Tamanho do Grafo (número de vértices)', fontsize=14)
+plt.ylabel('Tempo Médio de Execução (segundos)', fontsize=14)
 #plt.title('Comparação de Performance - Zoom (10 a 500 vértices)', fontsize=14)
-plt.legend(fontsize=11)
+plt.legend(fontsize=14)
 plt.grid(True, alpha=0.3)
 
 # Configurar eixo X apenas com os tamanhos do zoom
 plt.xticks(zoom_sizes, rotation=45)
-
+plt.tick_params(axis='both', which='major', labelsize=12)
 # Opcional: usar escala logarítmica se necessário
 # plt.yscale('log')
 
 plt.tight_layout()
+plt.savefig('comparacao_ate_300.png', dpi=300, bbox_inches='tight')
+
 plt.show()
